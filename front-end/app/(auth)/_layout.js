@@ -8,6 +8,7 @@ export default function AppLayout() {
         tabBarActiveTintColor: '#4F46E5',
         tabBarInactiveTintColor: 'gray',
       }}>
+      
       <Tabs.Screen
         name="pet"
         options={{
@@ -17,24 +18,7 @@ export default function AppLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="workoutLogs"
-        options={{
-          title: 'Workout',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="dumbbell" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-      name="workoutSession"
-      options={{
-        title: 'Workout Session',
-        tabBarIcon: ({ color }) => (
-          <FontAwesome name="heartbeat" size={24} color={color} />
-        ),
-      }}
-      />
+
       <Tabs.Screen
         name="profile"
         options={{
