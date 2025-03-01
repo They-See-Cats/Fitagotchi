@@ -12,8 +12,12 @@ export default function PetScreen() {
   // Array containing both GIF and video files
   const mediaFiles = [
     { type: 'gif', source: require('../../assets/med-cat.gif') },
+    { type: 'gif', source: require('../../assets/tiny-cat.gif') },
+    { type: 'gif', source: require('../../assets/big-cat.gif') },
     { type: 'video', source: require('../../assets/big-cat.mp4') },
-    { type: 'video', source: require('../../assets/test.mp4') }
+    { type: 'image', source: require('../../assets/big-cat.png') },
+    { type: 'image', source: require('../../assets/med-cat.png') },
+    { type: 'image', source: require('../../assets/tiny-cat.png') },
   ];
 
   // Track the current media index
