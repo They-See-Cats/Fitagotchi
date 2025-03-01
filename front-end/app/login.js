@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, Alert, ImageBackground 
 } from 'react-native';
-import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons'; // Import Icon Library
 import supabase from '../utils/supabaseClient';
-import styles from '../styles/loginStyle'; // Import styles from external file
+import { router } from 'expo-router';
+import styles from '../styles/loginStyle'; // Import styles from external file 
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -38,7 +39,7 @@ export default function LoginScreen() {
           setErrorMessage('Incorrect password. Please try again.');
         } else {
           Alert.alert('Success', 'Login successful!');
-          router.push('/profile'); // Navigate to home or skills page
+          router.push('/'); // Navigate to home page
         }
       }
     } catch (error) {
@@ -50,7 +51,13 @@ export default function LoginScreen() {
   return (
     <ImageBackground
       style={styles.background}
+
     >
+      {/* Home Icon in the Top Right */}
+      <TouchableOpacity style={styles.homeIcon} onPress={() => router.push('/')}>
+        <Ionicons name="home" size={30} color="white" />
+      </TouchableOpacity>
+
       <View style={styles.container}>
         <Text style={styles.heading}>Login to Your Account</Text>
 
@@ -86,7 +93,7 @@ export default function LoginScreen() {
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('registration')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
           <Text style={styles.linkText}>Create an Account</Text>
         </TouchableOpacity>
       </View>
