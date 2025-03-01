@@ -39,7 +39,8 @@ export default function LoginScreen() {
           setErrorMessage('Incorrect password. Please try again.');
         } else {
           Alert.alert('Success', 'Login successful!');
-          router.push('/'); // Navigate to home page
+          router.push('/(auth)/pet'); // Navigate to home or skills page
+
         }
       }
     } catch (error) {
