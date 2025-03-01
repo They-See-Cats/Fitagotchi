@@ -7,7 +7,6 @@ import supabase from '../utils/supabaseClient';
 import styles from '../styles/loginStyle'; // Import styles from external file
 
 export default function LoginScreen() {
-  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -39,7 +38,7 @@ export default function LoginScreen() {
           setErrorMessage('Incorrect password. Please try again.');
         } else {
           Alert.alert('Success', 'Login successful!');
-          router.push('/profile'); // Navigate to home or skills page
+          router.push('/(auth)/pet'); // Navigate to home or skills page
         }
       }
     } catch (error) {
