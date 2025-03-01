@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import supabase from '../utils/supabaseClient';
 import styles from '../styles/registrationStyle';  // Import the styles
+import { router } from 'expo-router';
 
 export default function RegistrationScreen() {
   const [firstName, setFirstName] = useState('');
@@ -123,6 +124,11 @@ export default function RegistrationScreen() {
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style = {styles.button} onPress={() => router.push("/")}>
+          <Text style={styles.buttonText}>Home</Text>
+        </TouchableOpacity>
+
       </View>
       <StatusBar style="light" />
     </ImageBackground>
