@@ -10,6 +10,16 @@ export default function AppLayout() {
       }}>
       
       <Tabs.Screen
+        name="workoutLogs"
+        options={{
+          title: 'workoutLogs',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="clipboard" size={24} color={color} />
+          ),
+        }}
+      />
+      
+      <Tabs.Screen
         name="pet"
         options={{
           title: 'Pet',
