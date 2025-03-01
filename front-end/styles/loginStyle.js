@@ -8,6 +8,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  homeIcon: {
+    position: 'absolute',
+    top: 40, // Adjust for status bar
+    right: 20, // Position to top-right
+    zIndex: 10, // Ensure it's on top
+  },
   container: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     padding: 30,
