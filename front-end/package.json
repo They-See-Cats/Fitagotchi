@@ -9,9 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.4",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
-    "@expo/vector-icons": "^14.0.4",
     "@supabase/supabase-js": "^2.49.1",
     "expo": "~52.0.37",
     "expo-router": "^4.0.17",
@@ -20,8 +20,10 @@
     "react": "18.3.1",
     "react-native": "0.76.7",
     "react-native-dotenv": "^3.4.11",
+    "react-native-paper": "^5.13.1",
     "react-native-url-polyfill": "^2.0.0",
-    "twrnc": "^4.6.1"
+    "twrnc": "^4.6.1",
+    "expo-av": "~15.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
