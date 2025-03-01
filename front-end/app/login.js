@@ -7,7 +7,6 @@ import supabase from '../utils/supabaseClient';
 import styles from '../styles/loginStyle'; // Import styles from external file
 
 export default function LoginScreen() {
-  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
