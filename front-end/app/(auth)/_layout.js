@@ -5,6 +5,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import tw from '../../tailwind';
 import { AuthProvider } from "../../context/AuthProvider"; 
+import { Ionicons } from '@expo/vector-icons';
 
 export default function AppLayout() {
   const systemTheme = useColorScheme(); // Detect system theme
@@ -42,7 +43,7 @@ export default function AppLayout() {
               options={{
                 title: '',
                 tabBarIcon: ({ color }) => (
-                  <FontAwesome name="clipboard" size={28} color={color} />
+                  <Ionicons name="list" size={24} color={color} />
                 ),
               }}
             />
