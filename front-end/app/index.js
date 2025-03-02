@@ -7,10 +7,13 @@ export default function HomeScreen() {
   const router = useRouter();
 
   return (
-    <View style={tw`flex-1 justify-center items-center bg-white p-6`}>
-      <Text style={tw`text-xl font-semibold text-green-600 mb-4`}>
+    <View style={tw`flex-1 justify-center items-center bg-gray-900 p-6`}> 
+      {/* 🔥 Changed background from bg-white to bg-gray-900 (Dark mode fix) */}
+      
+      <Text style={tw`text-xl font-semibold text-green-400 mb-4`}>
         Welcome to PetGym!
       </Text>
+
       <TouchableOpacity
         style={tw`flex-row items-center bg-green-500 px-6 py-3 rounded-lg shadow-md`}
         onPress={() => router.push("/login")}
