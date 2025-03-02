@@ -15,9 +15,7 @@ export default function PetScreen() {
     { type: 'gif', source: require('../../assets/tiny-cat.gif') },
     { type: 'gif', source: require('../../assets/big-cat.gif') },
     { type: 'video', source: require('../../assets/big-cat.mp4') },
-    { type: 'image', source: require('../../assets/big-cat.png') },
-    { type: 'image', source: require('../../assets/med-cat.png') },
-    { type: 'image', source: require('../../assets/tiny-cat.png') },
+
   ];
 
   // Track the current media index
@@ -60,13 +58,6 @@ export default function PetScreen() {
             style={tw`w-72 h-72 rounded-lg`}
           />
         )}
-      {currentMedia.type === 'image' && (
-        <Image
-          source={currentMedia.source}
-          resizeMode="cover"
-          style={tw`w-72 h-72 rounded-lg`}
-        />
-      )}
       
       </View>
 
