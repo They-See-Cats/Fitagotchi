@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
-import { useAuth } from '../../../context/AuthProvider';
-import supabase from '../../../utils/supabaseClient';
+import { useAuth } from '../../context/AuthProvider';
+import supabase from '../../utils/supabaseClient';
 import { router } from 'expo-router';
 
 export default function WelcomeScreen2() {
