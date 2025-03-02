@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, Alert, ImageBackground 
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Import Icon Library
 import supabase from '../utils/supabaseClient';
 import { router } from 'expo-router';
@@ -37,7 +35,7 @@ export default function LoginScreen() {
   }; 
 
   return (
-    <ImageBackground
+    <View
       style={styles.background}
     >
       {/* Home Icon in the Top Right */}
@@ -84,6 +82,6 @@ export default function LoginScreen() {
           <Text style={styles.linkText}>Create an Account</Text>
         </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </View>
   );
 }
