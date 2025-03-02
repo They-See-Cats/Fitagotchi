@@ -6,7 +6,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-
 import tw from '../../tailwind';
 
 export default function PetScreen() {
@@ -29,11 +28,14 @@ export default function PetScreen() {
   ];
 
   const [heartIndex, setHeartIndex] = useState(6);
-  const [level, setLevel] = useState(3);
   const [mediaIndex, setMediaIndex] = useState(0);
   const [appState, setAppState] = useState(AppState.currentState);
   const [isScreenActive, setIsScreenActive] = useState(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  // Hardcoded XP and Level
+  const level = 3;
+  const xp = 75; // XP out of 100
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -51,46 +53,29 @@ export default function PetScreen() {
 
   useEffect(() => {
     let timer;
-    if (heartIndex > 0 && isScreenActive && appState === "active" && !isAlertOpen && level > 0) {
+    if (heartIndex > 0 && isScreenActive && appState === "active" && !isAlertOpen) {
       timer = setInterval(() => {
         setHeartIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
       }, 99999999999999);
     }
     return () => clearInterval(timer);
-  }, [heartIndex, isScreenActive, appState, isAlertOpen, level]);
+  }, [heartIndex, isScreenActive, appState, isAlertOpen]);
 
   useEffect(() => {
-    if (heartIndex === 0 && isScreenActive && !isAlertOpen && level > 0) {
+    if (heartIndex === 0 && isScreenActive && !isAlertOpen) {
       setIsAlertOpen(true);
-
       Alert.alert(
         level > 1 ? "Your level just went down!" : "You lost your cat!",
         level > 1
           ? "Your cat lost its age. Get back to working out or you will lose your cat soon!"
           : "But you can still get them back if you go back to working out!",
-        [{ text: "OK", onPress: () => handleAlertDismiss() }]
+        [{ text: "OK", onPress: () => setIsAlertOpen(false) }]
       );
     }
-  }, [heartIndex, isScreenActive, isAlertOpen, level]);
-
-  const handleAlertDismiss = () => {
-    if (level > 1) {
-      setLevel((prevLevel) => prevLevel - 1);
-      setMediaIndex((prevIndex) => Math.min(prevIndex + 1, mediaFiles.length - 1));
-      setHeartIndex(6); // Reset hearts only if there's still a level left
-    } else {
-      setMediaIndex(-1); // Hide the cat
-      setHeartIndex(-1); // Hide the hearts
-    }
-    setIsAlertOpen(false);
-  };
+  }, [heartIndex, isScreenActive, isAlertOpen]);
 
   const nextPage = () => {
     router.push('/workout/workoutSession');
-  };
-
-  const handleTimerClick = () => {
-    if (mediaIndex > 0) setMediaIndex((prevIndex) => prevIndex - 1);
   };
 
   return (
@@ -100,14 +85,22 @@ export default function PetScreen() {
         style={tw`flex-1 justify-center items-center mt-[-200px]`}
         resizeMode="cover"
       >
-        {/* Hearts Above the Cat */}
+        {/* XP Bar and Level Display */}
+        <View style={tw`absolute top-10 w-5/6 items-center pt-[200px]`}>
+          <Text style={tw`text-lg font-bold text-white`}>Level: {level}</Text>
+          <View style={tw`w-full h-4 bg-gray-300 rounded-full mt-1`}>
+            <View style={[tw`h-full bg-green-500 rounded-full`, { width: `${xp}%` }]} />
+          </View>
+        </View>
+
+        {/* Hearts */}
         {level > 0 && (
-          <TouchableOpacity style={tw`absolute top-20`} onPress={handleTimerClick}>
-            <Image source={heartStates[heartIndex]} style={tw`w-36 h-12 mt-[350px]`} />
+          <TouchableOpacity style={tw`absolute top-20`} onPress={() => setHeartIndex(heartIndex - 1)}>
+            <Image source={heartStates[heartIndex]} style={tw`w-36 h-12 mt-[400px]`} />
           </TouchableOpacity>
         )}
 
-        {/* Cat in the Center */}
+        {/* Cat Image */}
         <View style={tw`flex-1 justify-center items-center pt-[400px]`}>
           {level > 0 && mediaIndex !== -1 && mediaFiles[mediaIndex] ? (
             mediaFiles[mediaIndex].type === 'gif' ? (
