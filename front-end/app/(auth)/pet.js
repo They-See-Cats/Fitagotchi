@@ -60,7 +60,7 @@ export default function PetScreen() {
     if (heartIndex > 0 && isScreenActive && appState === "active" && !isAlertOpen) {
       timer = setInterval(() => {
         setHeartIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
-      }, 1000);
+      }, 2000);
     }
     return () => clearInterval(timer);
   }, [heartIndex, isScreenActive, appState, isAlertOpen]);
