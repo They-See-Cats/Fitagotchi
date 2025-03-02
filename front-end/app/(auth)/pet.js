@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, ImageBackground, Alert, Text, AppState } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { View, Image, ImageBackground, Alert, Text, AppState, Animated } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -35,6 +35,7 @@ export default function PetScreen() {
   const [isScreenActive, setIsScreenActive] = useState(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
+  const glowAnim = useRef(new Animated.Value(1)).current; // Initial opacity value
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -92,10 +93,23 @@ export default function PetScreen() {
     setIsAlertOpen(false);
   };
 
-
   const nextPage = () => {
     router.push('/workout/workoutSession');
   };
+
+  // Glow animation when the cat is missing
+  useEffect(() => {
+    if (mediaIndex === -1) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(glowAnim, { toValue: 0.5, duration: 1000, useNativeDriver: true }),
+          Animated.timing(glowAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        ])
+      ).start();
+    } else {
+      glowAnim.setValue(1); // Reset opacity if the cat is back
+    }
+  }, [mediaIndex]);
 
   return (
     <SafeAreaView style={tw`flex-1`}>
@@ -139,20 +153,26 @@ export default function PetScreen() {
           ) : (
             <View style={tw`flex flex-col justify-center items-center`}>
               <Text style={tw`text-lg font-bold text-black`}>Missing your cat?</Text>
-              <Text style={tw`text-lg font-semibold text-gray-700`}>
-                You can get them back by clicking on the green icon and working out!
+              <Text style={tw`text-lg font-bold text-black`}>
+                You can get them back by working out!
               </Text>
-              <Image source='../../assets/sign.png' style={tw`w-36 h-12`} />
+              <Image source={require('../../assets/sign.png')} style={tw`w-64 h-64`} />
             </View>
           )}
         </View>
 
-        {/* Workout Button */}
+        {/* Workout Button with Glow Animation */}
+        <Animated.View 
+        style={[
+          tw`absolute bottom-10 right-5`,{ opacity: mediaIndex === -1 ? glowAnim : 10 } ]}>
+
         <FAB
-          style={tw`absolute bottom-10 right-5 bg-green-500`}
+          style={{ backgroundColor: "#4B5BAB" }}
           icon={() => <FontAwesome name="heartbeat" size={24} color="white" />}
           onPress={nextPage}
         />
+
+        </Animated.View>
       </ImageBackground>
     </SafeAreaView>
   );
