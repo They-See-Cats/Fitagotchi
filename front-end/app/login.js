@@ -28,7 +28,6 @@ export default function LoginScreen() {
       if (error) {
         setErrorMessage('Invalid email or password.');
       } else {
-        Alert.alert('Success', 'Login successful!');
         router.push('/(auth)/pet'); // Navigate to next screen
       }
     } catch (error) {

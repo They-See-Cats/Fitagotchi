@@ -21,19 +21,22 @@ export default function ProfileScreen() {
 
   const fetchUserData = async () => {
     setLoading(true);
+    
+
+
     const { data, error } = await supabase
-      .from('Users') // Make sure your table name is correct
-      .select('name, email')
-      .eq('id', user.id) // Match with Supabase Auth user ID
-      .single(); // Fetch only one record
+      .from('Users') // ✅ Ensure correct table name (lowercase 'users' if needed)
+      .select('first_name, last_name, email, username, pet_type, num_days, xp, level')
+      .eq('id', user?.id) // ✅ Match user ID correctly
+      .maybeSingle(); // ✅ Prevents errors if no rows exist
 
     if (error) {
-      console.error('Error fetching user data:', error);
-    } else {
-      setUserData(data);
-    }
+      console.error('🚨 Error fetching user data:', error);
+    } 
     setLoading(false);
-  };
+};
+
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
