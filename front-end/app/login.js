@@ -18,40 +18,28 @@ export default function LoginScreen() {
       setErrorMessage('Email and password are required.');
       return;
     }
-
+  
     try {
-      const { data: users, error } = await supabase
-        .from('Users')
-        .select('*')
-        .eq('email', email.toLowerCase()); // Ensure lowercase comparison
-
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase(),
+        password,
+      });
+  
       if (error) {
-        console.error('Supabase Error:', error);
-        Alert.alert('Error', 'Failed to connect to the database.');
-        return;
-      }
-
-      if (users.length === 0) {
-        setErrorMessage('No account found with this email.');
+        setErrorMessage('Invalid email or password.');
       } else {
-        const user = users[0];
-        if (user.password !== password) {
-          setErrorMessage('Incorrect password. Please try again.');
-        } else {
-          router.push('/(auth)/pet'); // Navigate to home or skills page
-
-        }
+        Alert.alert('Success', 'Login successful!');
+        router.push('/(auth)/pet'); // Navigate to next screen
       }
     } catch (error) {
       console.error('Unexpected Error:', error);
       setErrorMessage('Something went wrong. Please try again.');
     }
-  };
+  }; 
 
   return (
     <ImageBackground
       style={styles.background}
-
     >
       {/* Home Icon in the Top Right */}
       <TouchableOpacity style={styles.homeIcon} onPress={() => router.push('/')}>
@@ -93,7 +81,7 @@ export default function LoginScreen() {
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
+        <TouchableOpacity onPress={() => navigation.navigate('signup')}>
           <Text style={styles.linkText}>Create an Account</Text>
         </TouchableOpacity>
       </View>

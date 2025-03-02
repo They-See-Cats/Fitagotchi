@@ -7,7 +7,7 @@ import supabase from '../utils/supabaseClient';
 import styles from '../styles/registrationStyle';  // Import the styles
 import { router } from 'expo-router';
 
-export default function RegistrationScreen() {
+export default function SignupScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -17,7 +17,9 @@ export default function RegistrationScreen() {
 
   // Function that handles the registration process
   const handleRegister = async () => {
-    // Input Validations
+    setErrorMessage('');
+
+    // ✅ Input Validations
     if (!firstName.trim()) {
       setErrorMessage('First name is required.');
       return;
@@ -40,37 +42,61 @@ export default function RegistrationScreen() {
     }
 
     try {
-      // Insert into 'Users' Table
-      const { data, error } = await supabase
-        .from('Users')
-        .insert([{ email, password, firstName, lastName }]);
+      // ✅ Create user in Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase(),
+        password,
+        options: {
+          data: { firstName, lastName }, // Stores metadata in Supabase Auth
+        },
+      });
 
       if (error) {
-        console.error('Error inserting user:', error);
-        Alert.alert('Registration Failed', 'An error occurred while signing up.');
+        console.error('Error signing up:', error);
+        setErrorMessage(error.message);
         return;
       }
 
-      console.log('User registered successfully:', data);
+      const userId = data.user?.id;
+      console.log('User created:', userId);
+
+      // ✅ Insert additional user data into "Users" table
+      if (userId) {
+        const { error: userError } = await supabase.from('Users').insert([
+          {
+            id: userId,
+            first_name: firstName,
+            last_name: lastName,
+            email: email.toLowerCase(),
+          },
+        ]);
+
+        if (userError) {
+          console.error('Error inserting user data:', userError);
+          Alert.alert('Registration Successful', 'But failed to save additional info.');
+        }
+      }
+
+      // ✅ Success Message
       Alert.alert('Success', 'Check your email for the verification link!');
-      
-      // Reset Fields
+
+      // ✅ Redirect to welcomePage1 to collect more data
+      router.push('/(auth)/welcome/welcomePage1');
+
+      // ✅ Reset Fields
       setFirstName('');
       setLastName('');
       setEmail('');
       setPassword('');
       setVerifyPassword('');
-      setErrorMessage('');
     } catch (err) {
       console.error('Unexpected error:', err);
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      setErrorMessage('Something went wrong. Please try again.');
     }
   };
 
   return (
-    <ImageBackground
-      style={styles.background}
-    >
+    <ImageBackground style={styles.background}>
       <View style={styles.container}>
         <Text style={styles.heading}>Create Your Account</Text>
 
@@ -125,7 +151,7 @@ export default function RegistrationScreen() {
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style = {styles.button} onPress={() => router.push("/")}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/")}>
           <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
 
