@@ -12,6 +12,7 @@ def resize_images(image_paths, output_size=(790, 254)):
 
 if __name__ == "__main__":
     image_paths = [
+        "../front-end/assets/zero-heart.png",
         "../front-end/assets/half-heart.png",
         "../front-end/assets/one-heart.png",
         "../front-end/assets/one-half-heart.png",
