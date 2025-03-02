@@ -38,7 +38,6 @@ export default function LoginScreen() {
         if (user.password !== password) {
           setErrorMessage('Incorrect password. Please try again.');
         } else {
-          Alert.alert('Success', 'Login successful!');
           router.push('/(auth)/pet'); // Navigate to home or skills page
 
         }
