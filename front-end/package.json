@@ -23,6 +23,7 @@
     "react-native": "0.76.7",
     "react-native-dotenv": "^3.4.11",
     "react-native-paper": "^5.13.1",
+    "react-native-safe-area-context": "^5.2.0",
     "react-native-url-polyfill": "^2.0.0",
     "twrnc": "^4.6.1"
   },
