@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, ImageBackground, StyleSheet, Alert } from 'react-native';
+import { View, Image, ImageBackground, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context'; // ✅ Handles full screen including Dynamic Island
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PetScreen() {
   const router = useRouter();
@@ -19,90 +19,62 @@ export default function PetScreen() {
     require('../../assets/three-heart.png'),
   ];
 
-  const [heartIndex, setHeartIndex] = useState(6);
+  const mediaFiles = [
+    { type: 'gif', source: require('../../assets/OrangeCat3.gif') },
+    { type: 'gif', source: require('../../assets/OrangeCat2.gif') },
+    { type: 'gif', source: require('../../assets/OrangeCat1.gif') },
+  ];
 
-  // Decrement hearts every 5 seconds until 0, then show an alert
+  const [heartIndex, setHeartIndex] = useState(6);
+  const [level, setLevel] = useState(3); // Assuming level starts at 3
+  const [mediaIndex, setMediaIndex] = useState(0);
+
   useEffect(() => {
-    // If we're above 0, schedule a 5-second timer to lose half a heart
     if (heartIndex > 0) {
       const timer = setTimeout(() => {
         setHeartIndex((prevIndex) => prevIndex - 1);
       }, 5000);
-
       return () => clearTimeout(timer);
-    } 
-    // If heartIndex is 0, show alert
-    else {
-      Alert.alert(
-        "Try again next time!",
-        "Would you like to continue or go home?",
-        [
-          {
-            text: "Continue",
-            onPress: () => {
-              console.log("Continue pressed");
-              setHeartIndex(6);
-            },
-          },
-          {
-            text: "Home",
-            onPress: () => {
-              router.push('/');
-            },
-          },
-        ]
-      );
+    } else {
+      if (level > 1) {
+        Alert.alert(
+          "Your level just went down!",
+          "Your cat lost its age. Get back to working out or you will lose your cat soon!",
+          [{ text: "OK", onPress: () => setHeartIndex(6) }]
+        );
+        setLevel((prevLevel) => prevLevel - 1);
+        setMediaIndex((prevIndex) => Math.min(prevIndex + 1, mediaFiles.length - 1));
+      } else {
+        Alert.alert(
+          "You lost your cat!",
+          "But you can still get them back if you go back to working out!",
+          [{ text: "OK", onPress: () => setHeartIndex(6) }]
+        );
+      }
     }
   }, [heartIndex]);
 
-  // ---- Existing code for cycling through GIF/Video ----
-  const mediaFiles = [
-    { type: 'gif', source: require('../../assets/SmallOrangeCat.gif') }
-  ];
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaFiles.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const currentMedia = mediaFiles[currentIndex];
-
-  // ---- Navigate to next page when FAB is pressed ----
   const nextPage = () => {
     router.push('workout/workoutSession');
   };
 
+  const handleTimerClick = () => {
+    setMediaIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : prevIndex));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground 
-        style={styles.background}
-        resizeMode="cover"
-      >
-        {/* Hearts container at top-center */}
-        <View style={styles.heartsContainer}>
-          {/* Display the current heart image based on heartIndex */}
-          <Image 
-            source={heartStates[heartIndex]} 
-            style={styles.heartImage}
-          />
-        </View>
+      <ImageBackground style={styles.background} resizeMode="cover">
+        <TouchableOpacity style={styles.heartsContainer} onPress={handleTimerClick}>
+          <Image source={heartStates[heartIndex]} style={styles.heartImage} />
+        </TouchableOpacity>
 
-        {/* Pet media (GIF or Video) */}
         <View pointerEvents="none">
-          {currentMedia.type === 'gif' ? (
-            <Image
-              source={currentMedia.source}
-              resizeMode="contain"
-              style={styles.media}
-            />
+          {mediaFiles[mediaIndex].type === 'gif' ? (
+            <Image source={mediaFiles[mediaIndex].source} resizeMode="contain" style={styles.media} />
           ) : (
             <Video
-              source={currentMedia.source}
+              source={mediaFiles[mediaIndex].source}
               rate={1.0}
               volume={0.0}
               isMuted
@@ -114,7 +86,6 @@ export default function PetScreen() {
           )}
         </View>
 
-        {/* Floating Action Button */}
         <FAB
           style={styles.fab}
           icon={() => <FontAwesome name="heartbeat" size={24} color="white" />}
@@ -125,7 +96,6 @@ export default function PetScreen() {
   );
 }
 
-// ---- Styles ----
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -139,19 +109,19 @@ const styles = StyleSheet.create({
   },
   heartsContainer: {
     position: 'absolute',
-    top: 50, // adjust as needed
+    top: 50,
     left: 0,
     right: 0,
     alignItems: 'center',
   },
   heartImage: {
-    width: 150, // adjust to match your image's aspect ratio
+    width: 150,
     height: 50,
     resizeMode: 'contain',
   },
   media: {
-    width: 250, 
-    height: 250, 
+    width: 250,
+    height: 250,
   },
   fab: {
     position: 'absolute',
