@@ -56,7 +56,7 @@ export default function AppLayout() {
           <Tabs.Screen
             name="profile"
             options={{
-              title: 'Profile',
+              title: '',
               tabBarIcon: ({ color }) => (
                 <FontAwesome name="user" size={24} color={color} />
               ),
