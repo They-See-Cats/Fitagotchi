@@ -1,4 +1,5 @@
 # Env
 env/
+front-end/.env
 
 .DS_Store
