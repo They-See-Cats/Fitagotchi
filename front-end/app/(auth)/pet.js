@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, ImageBackground, StyleSheet } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import tw from '../../tailwind';
+import { SafeAreaView } from 'react-native-safe-area-context'; // ✅ Handles full screen including Dynamic Island
 
 export default function PetScreen() {
   const router = useRouter();
 
   // Array containing both GIF and video files
   const mediaFiles = [
-    { type: 'gif', source: require('../../assets/med-cat.gif') },
-    { type: 'gif', source: require('../../assets/tiny-cat.gif') },
-    { type: 'gif', source: require('../../assets/big-cat.gif') },
-    { type: 'video', source: require('../../assets/big-cat.mp4') },
-
+    { type: 'gif', source: require('../../assets/SmallOrangeCat.gif') }
   ];
 
   // Track the current media index
@@ -38,35 +34,63 @@ export default function PetScreen() {
   const currentMedia = mediaFiles[currentIndex];
 
   return (
-    <View style={tw`flex-1 justify-center items-center bg-white p-6`}>
-      <View pointerEvents="none">
-        {currentMedia.type === 'gif' ? (
-          <Image
-            source={currentMedia.source}
-            resizeMode="cover"
-            style={tw`w-72 h-72 rounded-lg`}
-          />
-        ) : (
-          <Video
-            source={currentMedia.source}
-            rate={1.0}
-            volume={0.0}
-            isMuted
-            resizeMode="cover"
-            shouldPlay
-            isLooping
-            style={tw`w-72 h-72 rounded-lg`}
-          />
-        )}
-      
-      </View>
+    <SafeAreaView style={styles.container}>
+      <ImageBackground 
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View pointerEvents="none">
+          {currentMedia.type === 'gif' ? (
+            <Image
+              source={currentMedia.source}
+              resizeMode="contain" // ✅ Ensures it fits without cropping
+              style={styles.media}
+            />
+          ) : (
+            <Video
+              source={currentMedia.source}
+              rate={1.0}
+              volume={0.0}
+              isMuted
+              resizeMode="contain"
+              shouldPlay
+              isLooping
+              style={styles.media}
+            />
+          )}
+        </View>
 
-      {/* Floating Action Button to navigate */}
-      <FAB
-        style={tw`absolute bottom-10 right-10 bg-green-500`}
-        icon={() => <FontAwesome name="heartbeat" size={24} color="white" />}
-        onPress={nextPage}
-      />
-    </View>
+        {/* Floating Action Button to navigate */}
+        <FAB
+          style={styles.fab}
+          icon={() => <FontAwesome name="heartbeat" size={24} color="white" />}
+          onPress={nextPage}
+        />
+      </ImageBackground>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  media: {
+    width: 250, // Adjust size as needed
+    height: 250, 
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 40, // Adjust so it doesn't overlap with the iPhone home bar
+    right: 20,
+    backgroundColor: 'green',
+  },
+});
+
