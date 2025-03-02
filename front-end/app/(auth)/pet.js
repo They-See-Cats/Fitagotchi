@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, ImageBackground, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Image, ImageBackground, StyleSheet, Alert, TouchableOpacity, AppState } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -28,14 +28,22 @@ export default function PetScreen() {
   const [heartIndex, setHeartIndex] = useState(6);
   const [level, setLevel] = useState(3); // Assuming level starts at 3
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [appState, setAppState] = useState(AppState.currentState);
 
   useEffect(() => {
-    if (heartIndex > 0) {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      setAppState(nextAppState);
+    });
+    return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    if (heartIndex > 0 && appState === "active") {
       const timer = setTimeout(() => {
         setHeartIndex((prevIndex) => prevIndex - 1);
       }, 5000);
       return () => clearTimeout(timer);
-    } else {
+    } else if (heartIndex === 0) {
       if (level > 1) {
         Alert.alert(
           "Your level just went down!",
@@ -52,7 +60,7 @@ export default function PetScreen() {
         );
       }
     }
-  }, [heartIndex]);
+  }, [heartIndex, appState]);
 
   const nextPage = () => {
     router.push('workout/workoutSession');
