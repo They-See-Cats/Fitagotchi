@@ -93,7 +93,7 @@ export default function LoginScreen() {
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
+        <TouchableOpacity onPress={() => router.push('egistration')}>
           <Text style={styles.linkText}>Create an Account</Text>
         </TouchableOpacity>
       </View>
