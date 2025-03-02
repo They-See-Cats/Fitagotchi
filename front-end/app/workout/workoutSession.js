@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
-import { StyleSheet, View, Button, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -89,8 +89,16 @@ const WorkoutSession = () => {
   return (
     <View style={styles.container}>
       <Stopwatch ref={stopwatchRef} />
-      <Button title="Reset" onPress={handleReset} />
-      <Button title="End Workout?" onPress={handleWorkoutComplete} />
+      
+      {/* Modern Darker Buttons */}
+      <TouchableOpacity style={styles.button} onPress={handleReset} activeOpacity={0.8}>
+        <Text style={styles.buttonText}>Reset</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={[styles.button, styles.endButton]} onPress={handleWorkoutComplete} activeOpacity={0.8}>
+        <Text style={styles.buttonText}>End Workout?</Text>
+      </TouchableOpacity>
+
       <Ionicons 
         name="arrow-back" 
         size={24} 
@@ -117,6 +125,28 @@ const styles = StyleSheet.create({
   stopwatchText: {
     fontSize: 48,
     marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#2E7D32', // Dark Green for Reset
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    marginTop: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 4, // Android shadow
+    width: 180, // Consistent button width
+  },
+  endButton: {
+    backgroundColor: '#C62828', // Dark Red for End Workout
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
 

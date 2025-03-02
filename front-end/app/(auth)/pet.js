@@ -60,6 +60,13 @@ export default function PetScreen() {
             style={tw`w-72 h-72 rounded-lg`}
           />
         )}
+      {currentMedia.type === 'image' && (
+        <Image
+          source={currentMedia.source}
+          resizeMode="cover"
+          style={tw`w-72 h-72 rounded-lg`}
+        />
+      )}
       
       </View>
 
