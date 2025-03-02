@@ -12,9 +12,9 @@ export default function AppLayout() {
       <Tabs.Screen
         name="workoutLogs"
         options={{
-          title: 'workoutLogs',
+          title: '',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="clipboard" size={24} color={color} />
+            <FontAwesome name="clipboard" size={28} color={color} />
           ),
         }}
       />
@@ -22,9 +22,9 @@ export default function AppLayout() {
       <Tabs.Screen
         name="pet"
         options={{
-          title: 'Pet',
+          title: '',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="home" size={24} color={color} />
+            <FontAwesome name="paw" size={28} color={color} />
           ),
         }}
       />
@@ -32,13 +32,12 @@ export default function AppLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: '',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="user" size={24} color={color} />
+            <FontAwesome name="user" size={28} color={color} />
           ),
         }}
       />
-      
       
     </Tabs>
   );
