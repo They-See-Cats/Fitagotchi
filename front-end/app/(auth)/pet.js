@@ -28,14 +28,13 @@ export default function PetScreen() {
   ];
 
   const [heartIndex, setHeartIndex] = useState(6);
+  const [level, setLevel] = useState(3);
+  const [xp, setXp] = useState(75);
   const [mediaIndex, setMediaIndex] = useState(0);
   const [appState, setAppState] = useState(AppState.currentState);
   const [isScreenActive, setIsScreenActive] = useState(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  // Hardcoded XP and Level
-  const level = 3;
-  const xp = 75; // XP out of 100
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -62,17 +61,37 @@ export default function PetScreen() {
   }, [heartIndex, isScreenActive, appState, isAlertOpen]);
 
   useEffect(() => {
-    if (heartIndex === 0 && isScreenActive && !isAlertOpen) {
+    if (heartIndex === 0 && isScreenActive && !isAlertOpen && level > 0) {
       setIsAlertOpen(true);
-      Alert.alert(
-        level > 1 ? "Your level just went down!" : "You lost your cat!",
-        level > 1
-          ? "Your cat lost its age. Get back to working out or you will lose your cat soon!"
-          : "But you can still get them back if you go back to working out!",
-        [{ text: "OK", onPress: () => setIsAlertOpen(false) }]
-      );
+
+      if (level > 1) {
+        Alert.alert(
+          "Your level just went down!",
+          "Your cat lost its age. Get back to working out or you will lose your cat soon!",
+          [{ text: "OK", onPress: () => handleAlertDismiss() }]
+        );
+      } else {
+        Alert.alert(
+          "You lost your cat!",
+          "But you can still get them back if you go back to working out!",
+          [{ text: "OK", onPress: () => handleAlertDismiss() }]
+        );
+      }
     }
   }, [heartIndex, isScreenActive, isAlertOpen]);
+
+  const handleAlertDismiss = () => {
+    if (level > 1) {
+      setLevel((prevLevel) => prevLevel - 1);
+      setMediaIndex((prevIndex) => Math.min(prevIndex + 1, mediaFiles.length - 1));
+      setHeartIndex(6); // Reset hearts only if there's still a level left
+    } else {
+      setMediaIndex(-1); // Hide the cat
+      setHeartIndex(-1); // Hide the hearts
+    }
+    setIsAlertOpen(false);
+  };
+
 
   const nextPage = () => {
     router.push('/workout/workoutSession');
