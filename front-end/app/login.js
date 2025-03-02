@@ -42,7 +42,7 @@ export default function LoginScreen() {
     >
       {/* Home Icon in the Top Right */}
       <TouchableOpacity style={styles.homeIcon} onPress={() => router.push('/')}>
-        <Ionicons name="home" size={30} color="white" />
+        <Ionicons name="home" size={40} color="black" />
       </TouchableOpacity>
 
       <View style={styles.container}>
@@ -80,7 +80,7 @@ export default function LoginScreen() {
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('signup')}>
+        <TouchableOpacity onPress={() => router.push('signup')}>
           <Text style={styles.linkText}>Create an Account</Text>
         </TouchableOpacity>
       </View>
