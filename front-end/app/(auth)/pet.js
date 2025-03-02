@@ -137,11 +137,12 @@ export default function PetScreen() {
               />
             )
           ) : (
-            <View style={tw`items-center`}>
+            <View style={tw`flex flex-col justify-center items-center`}>
               <Text style={tw`text-lg font-bold text-black`}>Missing your cat?</Text>
               <Text style={tw`text-lg font-semibold text-gray-700`}>
                 You can get them back by clicking on the green icon and working out!
               </Text>
+              <Image source='../../assets/sign.png' style={tw`w-36 h-12`} />
             </View>
           )}
         </View>
