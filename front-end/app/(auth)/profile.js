@@ -22,8 +22,6 @@ export default function ProfileScreen() {
   const fetchUserData = async () => {
     setLoading(true);
     
-
-
     const { data, error } = await supabase
       .from('Users') // ✅ Ensure correct table name (lowercase 'users' if needed)
       .select('first_name, last_name, email, username, pet_type, num_days, xp, level')
@@ -47,32 +45,34 @@ export default function ProfileScreen() {
     <View style={tw`flex-1 bg-gray-900 p-6`}> 
       <View style={tw`bg-gray-800 p-6 rounded-2xl shadow-lg w-full max-w-md`}>
         
-        {/* Profile Header */}
-        <Text style={tw`text-xl font-semibold text-white mb-4`}>Profile</Text>
+        {/* /* Profile Header */}
+          <View style={tw`items-center mb-4`}>
+            <Text style={tw`text-2xl font-bold text-white`}>Profile</Text>
+          </View>
 
-        {/* Loading Indicator */}
+          {/* Loading Indicator */}
         {loading ? (
           <ActivityIndicator size="large" color="#4F46E5" />
         ) : (
           <>
             {/* Information Section */}
-            <Text style={tw`text-xl font-semibold text-white mb-2`}>Information</Text>
-            <Text style={tw`text-lg text-gray-300 mb-1`}>Name: {userData?.name || 'N/A'}</Text>
-            <Text style={tw`text-lg text-gray-300 mb-4`}>Email: {userData?.email || user.email}</Text>
+            <Text style={tw`text-xl font-semibold text-white mb-2`}>Info:</Text>
+            <Text style={tw`text-lg text-gray-300 mb-1`}>Name: {userData?.first_Name || "NA" }</Text>
+            <Text style={tw`text-lg text-gray-300 mb-1`}>Pet: {userData?.pet_type || "NA"}</Text>
 
             {/* Stats Section */}
-            <Text style={tw`text-xl font-semibold text-white mb-2`}>Stats</Text>
+            <Text style={tw`text-xl font-semibold text-white mb-2`}>Stats:</Text>
             <Text style={tw`text-lg text-gray-300 mb-1`}>Rank: Elite</Text>
             <Text style={tw`text-lg text-gray-300 mb-4`}>XP Level: 42</Text>
 
             {/* Settings Section */}
-            <Text style={tw`text-xl font-semibold text-white mb-2`}>Settings</Text>
+            <Text style={tw`text-xl font-semibold text-white mb-2`}>Settings:</Text>
 
             {/* Email Field */}
             <View style={tw`flex-row items-center bg-gray-700 p-3 rounded-lg mb-4`}>
               <TextInput
                 style={tw`text-lg flex-1 text-white`}
-                placeholder={userData?.email || 'Email'}
+                placeholder={userData?.email || user.email}
                 placeholderTextColor="lightgray"
                 editable={false}
               />
