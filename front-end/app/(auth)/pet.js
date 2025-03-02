@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, ImageBackground, Alert, TouchableOpacity, Text, AppState } from 'react-native';
+import { View, Image, ImageBackground, Alert, Text, AppState } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -54,7 +54,7 @@ export default function PetScreen() {
     if (heartIndex > 0 && isScreenActive && appState === "active" && !isAlertOpen && level > 0) {
       timer = setInterval(() => {
         setHeartIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
-      }, 99999999999999);
+      }, 1000);
     }
     return () => clearInterval(timer);
   }, [heartIndex, isScreenActive, appState, isAlertOpen, level]);
@@ -62,7 +62,6 @@ export default function PetScreen() {
   useEffect(() => {
     if (heartIndex === 0 && isScreenActive && !isAlertOpen && level > 0) {
       setIsAlertOpen(true);
-
       Alert.alert(
         level > 1 ? "Your level just went down!" : "You lost your cat!",
         level > 1
@@ -89,10 +88,7 @@ export default function PetScreen() {
     router.push('/workout/workoutSession');
   };
 
-  const handleTimerClick = () => {
-    if (mediaIndex > 0) setMediaIndex((prevIndex) => prevIndex - 1);
-  };
-
+  // Make hearts non-clickable by replacing TouchableOpacity with a View.
   return (
     <SafeAreaView style={tw`flex-1`}>
       <ImageBackground
@@ -100,11 +96,11 @@ export default function PetScreen() {
         style={tw`flex-1 justify-center items-center mt-[-200px]`}
         resizeMode="cover"
       >
-        {/* Hearts Above the Cat */}
+        {/* Hearts Above the Cat - non-clickable */}
         {level > 0 && (
-          <TouchableOpacity style={tw`absolute top-20`} onPress={handleTimerClick}>
+          <View style={tw`absolute top-20`}>
             <Image source={heartStates[heartIndex]} style={tw`w-36 h-12 mt-[350px]`} />
-          </TouchableOpacity>
+          </View>
         )}
 
         {/* Cat in the Center */}
