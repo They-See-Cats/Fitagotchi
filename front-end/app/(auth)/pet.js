@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Image, ImageBackground, StyleSheet, Alert, TouchableOpacity, AppState } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Image, ImageBackground, StyleSheet, Alert, TouchableOpacity, Text, AppState } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PetScreen() {
   const router = useRouter();
@@ -26,9 +27,11 @@ export default function PetScreen() {
   ];
 
   const [heartIndex, setHeartIndex] = useState(6);
-  const [level, setLevel] = useState(3); // Assuming level starts at 3
+  const [level, setLevel] = useState(3);
   const [mediaIndex, setMediaIndex] = useState(0);
   const [appState, setAppState] = useState(AppState.currentState);
+  const [isScreenActive, setIsScreenActive] = useState(true);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -37,60 +40,97 @@ export default function PetScreen() {
     return () => subscription.remove();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      setIsScreenActive(true);
+      return () => setIsScreenActive(false);
+    }, [])
+  );
+
   useEffect(() => {
-    if (heartIndex > 0 && appState === "active") {
-      const timer = setTimeout(() => {
-        setHeartIndex((prevIndex) => prevIndex - 1);
-      }, 5000);
-      return () => clearTimeout(timer);
-    } else if (heartIndex === 0) {
+    let timer;
+    if (heartIndex > 0 && isScreenActive && appState === "active" && !isAlertOpen && level > 0) {
+      timer = setInterval(() => {
+        setHeartIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [heartIndex, isScreenActive, appState, isAlertOpen, level]);
+
+  useEffect(() => {
+    if (heartIndex === 0 && isScreenActive && !isAlertOpen && level > 0) {
+      setIsAlertOpen(true);
+
       if (level > 1) {
         Alert.alert(
           "Your level just went down!",
           "Your cat lost its age. Get back to working out or you will lose your cat soon!",
-          [{ text: "OK", onPress: () => setHeartIndex(6) }]
+          [{ text: "OK", onPress: () => handleAlertDismiss() }]
         );
-        setLevel((prevLevel) => prevLevel - 1);
-        setMediaIndex((prevIndex) => Math.min(prevIndex + 1, mediaFiles.length - 1));
       } else {
         Alert.alert(
           "You lost your cat!",
           "But you can still get them back if you go back to working out!",
-          [{ text: "OK", onPress: () => setHeartIndex(6) }]
+          [{ text: "OK", onPress: () => handleAlertDismiss() }]
         );
       }
     }
-  }, [heartIndex, appState]);
+  }, [heartIndex, isScreenActive, isAlertOpen, level]);
+
+  const handleAlertDismiss = () => {
+    if (level > 1) {
+      setLevel((prevLevel) => prevLevel - 1);
+      setMediaIndex((prevIndex) => Math.min(prevIndex + 1, mediaFiles.length - 1));
+      setHeartIndex(6); // Reset hearts only if there's still a level left
+    } else {
+      setMediaIndex(-1); // Hide the cat
+      setHeartIndex(-1); // Hide the hearts
+    }
+    setIsAlertOpen(false);
+  };
 
   const nextPage = () => {
     router.push('workout/workoutSession');
   };
 
   const handleTimerClick = () => {
-    setMediaIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : prevIndex));
+    if (mediaIndex > 0) setMediaIndex((prevIndex) => prevIndex - 1);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground style={styles.background} resizeMode="cover">
-        <TouchableOpacity style={styles.heartsContainer} onPress={handleTimerClick}>
-          <Image source={heartStates[heartIndex]} style={styles.heartImage} />
-        </TouchableOpacity>
+        
+        {/* Show hearts only if the level is above 0 */}
+        {level > 0 && (
+          <TouchableOpacity style={styles.heartsContainer} onPress={handleTimerClick}>
+            <Image source={heartStates[heartIndex]} style={styles.heartImage} />
+          </TouchableOpacity>
+        )}
 
-        <View pointerEvents="none">
-          {mediaFiles[mediaIndex].type === 'gif' ? (
-            <Image source={mediaFiles[mediaIndex].source} resizeMode="contain" style={styles.media} />
+        {/* Show the cat if level > 0, else show motivational text */}
+        <View style={styles.mediaContainer} pointerEvents="none">
+          {level > 0 && mediaIndex !== -1 && mediaFiles[mediaIndex] ? (
+            mediaFiles[mediaIndex].type === 'gif' ? (
+              <Image source={mediaFiles[mediaIndex].source} resizeMode="contain" style={styles.media} />
+            ) : (
+              <Video
+                source={mediaFiles[mediaIndex].source}
+                rate={1.0}
+                volume={0.0}
+                isMuted
+                resizeMode="contain"
+                shouldPlay
+                isLooping
+                style={styles.media}
+              />
+            )
           ) : (
-            <Video
-              source={mediaFiles[mediaIndex].source}
-              rate={1.0}
-              volume={0.0}
-              isMuted
-              resizeMode="contain"
-              shouldPlay
-              isLooping
-              style={styles.media}
-            />
+            <><Text style={styles.missingText}>
+                Missing your cat?
+              </Text><Text style={styles.missingText}>
+                  You can get them back by simply clicking on the green icon and working out!
+                </Text></>
           )}
         </View>
 
@@ -127,10 +167,23 @@ const styles = StyleSheet.create({
     height: 50,
     resizeMode: 'contain',
   },
+  mediaContainer: {
+    width: '80%',
+    height: 250,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   media: {
     width: 250,
     height: 250,
   },
+  missingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'black', // Set text color to black
+    padding: 10,
+  },  
   fab: {
     position: 'absolute',
     bottom: 40,
