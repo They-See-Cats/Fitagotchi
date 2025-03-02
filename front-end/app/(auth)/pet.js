@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, ImageBackground, StyleSheet, Alert, TouchableOpacity, Text, AppState } from 'react-native';
+import { View, Image, ImageBackground, Alert, TouchableOpacity, Text, AppState } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+
+import tw from '../../tailwind';
 
 export default function PetScreen() {
   const router = useRouter();
@@ -52,7 +54,7 @@ export default function PetScreen() {
     if (heartIndex > 0 && isScreenActive && appState === "active" && !isAlertOpen && level > 0) {
       timer = setInterval(() => {
         setHeartIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
-      }, 1000);
+      }, 99999999999999);
     }
     return () => clearInterval(timer);
   }, [heartIndex, isScreenActive, appState, isAlertOpen, level]);
@@ -61,19 +63,13 @@ export default function PetScreen() {
     if (heartIndex === 0 && isScreenActive && !isAlertOpen && level > 0) {
       setIsAlertOpen(true);
 
-      if (level > 1) {
-        Alert.alert(
-          "Your level just went down!",
-          "Your cat lost its age. Get back to working out or you will lose your cat soon!",
-          [{ text: "OK", onPress: () => handleAlertDismiss() }]
-        );
-      } else {
-        Alert.alert(
-          "You lost your cat!",
-          "But you can still get them back if you go back to working out!",
-          [{ text: "OK", onPress: () => handleAlertDismiss() }]
-        );
-      }
+      Alert.alert(
+        level > 1 ? "Your level just went down!" : "You lost your cat!",
+        level > 1
+          ? "Your cat lost its age. Get back to working out or you will lose your cat soon!"
+          : "But you can still get them back if you go back to working out!",
+        [{ text: "OK", onPress: () => handleAlertDismiss() }]
+      );
     }
   }, [heartIndex, isScreenActive, isAlertOpen, level]);
 
@@ -90,7 +86,7 @@ export default function PetScreen() {
   };
 
   const nextPage = () => {
-    router.push('workout/workoutSession');
+    router.push('/workout/workoutSession');
   };
 
   const handleTimerClick = () => {
@@ -98,21 +94,24 @@ export default function PetScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ImageBackground style={styles.background} resizeMode="cover">
-        
-        {/* Show hearts only if the level is above 0 */}
+    <SafeAreaView style={tw`flex-1`}>
+      <ImageBackground
+        source={require('../../assets/petBackground.png')}
+        style={tw`flex-1 justify-center items-center mt-[-200px]`}
+        resizeMode="cover"
+      >
+        {/* Hearts Above the Cat */}
         {level > 0 && (
-          <TouchableOpacity style={styles.heartsContainer} onPress={handleTimerClick}>
-            <Image source={heartStates[heartIndex]} style={styles.heartImage} />
+          <TouchableOpacity style={tw`absolute top-20`} onPress={handleTimerClick}>
+            <Image source={heartStates[heartIndex]} style={tw`w-36 h-12 mt-[350px]`} />
           </TouchableOpacity>
         )}
 
-        {/* Show the cat if level > 0, else show motivational text */}
-        <View style={styles.mediaContainer} pointerEvents="none">
+        {/* Cat in the Center */}
+        <View style={tw`flex-1 justify-center items-center pt-[400px]`}>
           {level > 0 && mediaIndex !== -1 && mediaFiles[mediaIndex] ? (
             mediaFiles[mediaIndex].type === 'gif' ? (
-              <Image source={mediaFiles[mediaIndex].source} resizeMode="contain" style={styles.media} />
+              <Image source={mediaFiles[mediaIndex].source} resizeMode="contain" style={tw`w-64 h-64`} />
             ) : (
               <Video
                 source={mediaFiles[mediaIndex].source}
@@ -122,20 +121,22 @@ export default function PetScreen() {
                 resizeMode="contain"
                 shouldPlay
                 isLooping
-                style={styles.media}
+                style={tw`w-64 h-64`}
               />
             )
           ) : (
-            <><Text style={styles.missingText}>
-                Missing your cat?
-              </Text><Text style={styles.missingText}>
-                  You can get them back by simply clicking on the green icon and working out!
-                </Text></>
+            <View style={tw`items-center`}>
+              <Text style={tw`text-lg font-bold text-black`}>Missing your cat?</Text>
+              <Text style={tw`text-lg font-semibold text-gray-700`}>
+                You can get them back by clicking on the green icon and working out!
+              </Text>
+            </View>
           )}
         </View>
 
+        {/* Workout Button */}
         <FAB
-          style={styles.fab}
+          style={tw`absolute bottom-10 right-5 bg-green-500`}
           icon={() => <FontAwesome name="heartbeat" size={24} color="white" />}
           onPress={nextPage}
         />
@@ -143,51 +144,3 @@ export default function PetScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heartsContainer: {
-    position: 'absolute',
-    top: 50,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  heartImage: {
-    width: 150,
-    height: 50,
-    resizeMode: 'contain',
-  },
-  mediaContainer: {
-    width: '80%',
-    height: 250,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  media: {
-    width: 250,
-    height: 250,
-  },
-  missingText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: 'black', // Set text color to black
-    padding: 10,
-  },  
-  fab: {
-    position: 'absolute',
-    bottom: 40,
-    right: 20,
-    backgroundColor: 'green',
-  },
-});
