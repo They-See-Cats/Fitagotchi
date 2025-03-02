@@ -11,7 +11,7 @@ export default function HomeScreen() {
       {/* 🔥 Changed background from bg-white to bg-gray-900 (Dark mode fix) */}
       <Image source={require('../assets/fitagotchitrans.png')} style={tw`w-[350px] h-[300px]`}/>
       <Text style={tw`text-xl font-semibold text-[#549929] mb-4 text-center`}>
-        This is where we put the elevator pitch or catchphrase!
+      Train, Evolve, Repeat – Your Gym Buddy, Just Like a Tomagotchi!
       </Text>
 
       <TouchableOpacity
