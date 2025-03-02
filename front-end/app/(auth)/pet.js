@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, ImageBackground, StyleSheet } from 'react-native';
+import { View, Image, ImageBackground, StyleSheet, Alert } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -9,15 +9,59 @@ import { SafeAreaView } from 'react-native-safe-area-context'; // ✅ Handles fu
 export default function PetScreen() {
   const router = useRouter();
 
-  // Array containing both GIF and video files
+  const heartStates = [
+    require('../../assets/zero-heart.png'),
+    require('../../assets/half-heart.png'),
+    require('../../assets/one-heart.png'),
+    require('../../assets/one-half-heart.png'),
+    require('../../assets/two-heart.png'),
+    require('../../assets/two-half-heart.png'),
+    require('../../assets/three-heart.png'),
+  ];
+
+  const [heartIndex, setHeartIndex] = useState(6);
+
+  // Decrement hearts every 5 seconds until 0, then show an alert
+  useEffect(() => {
+    // If we're above 0, schedule a 5-second timer to lose half a heart
+    if (heartIndex > 0) {
+      const timer = setTimeout(() => {
+        setHeartIndex((prevIndex) => prevIndex - 1);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    } 
+    // If heartIndex is 0, show alert
+    else {
+      Alert.alert(
+        "Try again next time!",
+        "Would you like to continue or go home?",
+        [
+          {
+            text: "Continue",
+            onPress: () => {
+              console.log("Continue pressed");
+              setHeartIndex(6);
+            },
+          },
+          {
+            text: "Home",
+            onPress: () => {
+              router.push('/');
+            },
+          },
+        ]
+      );
+    }
+  }, [heartIndex]);
+
+  // ---- Existing code for cycling through GIF/Video ----
   const mediaFiles = [
     { type: 'gif', source: require('../../assets/SmallOrangeCat.gif') }
   ];
 
-  // Track the current media index
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Function to cycle through media every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaFiles.length);
@@ -26,12 +70,12 @@ export default function PetScreen() {
     return () => clearInterval(interval);
   }, []);
 
-  // Function to navigate to the next page
+  const currentMedia = mediaFiles[currentIndex];
+
+  // ---- Navigate to next page when FAB is pressed ----
   const nextPage = () => {
     router.push('workout/workoutSession');
   };
-
-  const currentMedia = mediaFiles[currentIndex];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,11 +83,21 @@ export default function PetScreen() {
         style={styles.background}
         resizeMode="cover"
       >
+        {/* Hearts container at top-center */}
+        <View style={styles.heartsContainer}>
+          {/* Display the current heart image based on heartIndex */}
+          <Image 
+            source={heartStates[heartIndex]} 
+            style={styles.heartImage}
+          />
+        </View>
+
+        {/* Pet media (GIF or Video) */}
         <View pointerEvents="none">
           {currentMedia.type === 'gif' ? (
             <Image
               source={currentMedia.source}
-              resizeMode="contain" // ✅ Ensures it fits without cropping
+              resizeMode="contain"
               style={styles.media}
             />
           ) : (
@@ -60,7 +114,7 @@ export default function PetScreen() {
           )}
         </View>
 
-        {/* Floating Action Button to navigate */}
+        {/* Floating Action Button */}
         <FAB
           style={styles.fab}
           icon={() => <FontAwesome name="heartbeat" size={24} color="white" />}
@@ -71,6 +125,7 @@ export default function PetScreen() {
   );
 }
 
+// ---- Styles ----
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -82,15 +137,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  heartsContainer: {
+    position: 'absolute',
+    top: 50, // adjust as needed
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  heartImage: {
+    width: 150, // adjust to match your image's aspect ratio
+    height: 50,
+    resizeMode: 'contain',
+  },
   media: {
-    width: 250, // Adjust size as needed
+    width: 250, 
     height: 250, 
   },
   fab: {
     position: 'absolute',
-    bottom: 40, // Adjust so it doesn't overlap with the iPhone home bar
+    bottom: 40,
     right: 20,
     backgroundColor: 'green',
   },
 });
-
