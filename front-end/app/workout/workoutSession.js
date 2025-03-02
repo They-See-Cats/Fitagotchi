@@ -2,6 +2,20 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle, useRef } f
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+// Import the save command and formatDate helper from your logs file.
+import { saveDateToLogs, formatDate } from '../(auth)/workoutLogs'; 
+
+// Helper: Get current date in US Central Time (Chicago) by extracting parts.
+const getCurrentCentralDate = () => {
+  const now = new Date();
+  const options = { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' };
+  const formatter = new Intl.DateTimeFormat('en-US', options);
+  const parts = formatter.formatToParts(now);
+  const year = parts.find(part => part.type === 'year').value;
+  const month = parts.find(part => part.type === 'month').value;
+  const day = parts.find(part => part.type === 'day').value;
+  return new Date(`${year}-${month}-${day}T00:00:00`);
+};
 
 // Wrap Stopwatch in forwardRef to expose reset and pause functions.
 const Stopwatch = forwardRef((props, ref) => {
@@ -17,11 +31,9 @@ const Stopwatch = forwardRef((props, ref) => {
     } else if (!running && time !== 0) {
       clearInterval(interval);
     }
-    // Cleanup on unmount or when running changes.
     return () => clearInterval(interval);
   }, [running, time]);
 
-  // Expose reset and pause functions via ref.
   useImperativeHandle(ref, () => ({
     reset() {
       setTime(0);
@@ -32,13 +44,9 @@ const Stopwatch = forwardRef((props, ref) => {
     },
   }));
 
-  // Toggle the stopwatch running state.
   const toggleStopwatch = () => setRunning(prev => !prev);
-
-  // Helper function to pad numbers with leading zeros.
   const pad = (num) => num.toString().padStart(2, '0');
 
-  // Format time as "HH:MM.SS"
   const formatTime = () => {
     const hours = Math.floor(time / 3600000);
     const minutes = Math.floor((time % 3600000) / 60000);
@@ -57,6 +65,8 @@ const Stopwatch = forwardRef((props, ref) => {
 
 const WorkoutSession = () => {
   const stopwatchRef = useRef(null);
+  const [workoutEnded, setWorkoutEnded] = useState(false);
+  const [dateSelected, setDateSelected] = useState(false);
 
   const handleWorkoutComplete = () => {
     Alert.alert(
@@ -74,7 +84,11 @@ const WorkoutSession = () => {
         },
         {
           text: 'End Workout',
-          onPress: () => router.push('/pet'),
+          onPress: () => {
+            // Mark workout as ended and instruct the user to choose a date.
+            setWorkoutEnded(true);
+            Alert.alert("Workout Saved", "Your workout has been saved. Please choose the date.");
+          },
         },
       ]
     );
@@ -86,8 +100,63 @@ const WorkoutSession = () => {
     }
   };
 
+  // When the calendar icon is pressed
+  const handleCalendarIconPress = () => {
+    const currentDate = getCurrentCentralDate();
+    // Use formatDate to ensure consistent formatting, e.g., "2025-03-02"
+    const dateKey = formatDate(currentDate);
+    
+    if (workoutEnded) {
+      Alert.alert(
+        "Today's Date",
+        `Today's Date: ${dateKey} has been logged and saved.`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setDateSelected(true);
+              // Call the save command with the formatted date.
+              saveDateToLogs(dateKey);
+              // Navigate back to the main page.
+              router.push('/pet');
+            },
+          },
+        ]
+      );      
+    } else {
+      Alert.alert("Current Date", dateKey);
+    }
+  };
+
+  // Override the back arrow: if workout ended but no date has been selected, prevent exit.
+  const handleBackPress = () => {
+    if (workoutEnded && !dateSelected) {
+      Alert.alert("Please Select a Date", "You must select the date before exiting.");
+    } else {
+      router.push('/pet');
+    }
+  };
+
   return (
     <View style={styles.container}>
+      {/* Left Back Arrow */}
+      <Ionicons 
+        name="arrow-back" 
+        size={24} 
+        color="white" 
+        onPress={handleBackPress} 
+        style={styles.backArrow} 
+      />
+
+      {/* Calendar Icon on Top Right */}
+      <Ionicons 
+        name="calendar" 
+        size={24} 
+        color="white" 
+        onPress={handleCalendarIconPress} 
+        style={styles.calendarIcon} 
+      />
+
       <Stopwatch ref={stopwatchRef} />
       
       {/* Modern Darker Buttons */}
@@ -98,14 +167,6 @@ const WorkoutSession = () => {
       <TouchableOpacity style={[styles.button, styles.endButton]} onPress={handleWorkoutComplete} activeOpacity={0.8}>
         <Text style={styles.buttonText}>End Workout?</Text>
       </TouchableOpacity>
-
-      <Ionicons 
-        name="arrow-back" 
-        size={24} 
-        color="white" 
-        onPress={() => router.push('/pet')} 
-        style={styles.backArrow} 
-      />
     </View>
   );
 };
@@ -122,12 +183,17 @@ const styles = StyleSheet.create({
     top: 40,
     left: 20,
   },
+  calendarIcon: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+  },
   stopwatchText: {
     fontSize: 48,
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#2E7D32', // Dark Green for Reset
+    backgroundColor: '#2E7D32',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 30,
@@ -137,11 +203,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    elevation: 4, // Android shadow
-    width: 180, // Consistent button width
+    elevation: 4,
+    width: 180,
   },
   endButton: {
-    backgroundColor: '#C62828', // Dark Red for End Workout
+    backgroundColor: '#C62828',
   },
   buttonText: {
     color: '#fff',
