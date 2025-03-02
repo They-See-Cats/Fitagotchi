@@ -2,7 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Image, ImageBackground, Alert, Text, AppState } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
+
 import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -149,7 +153,7 @@ export default function PetScreen() {
         {/* Workout Button */}
         <FAB
           style={tw`absolute bottom-10 right-5 bg-green-500`}
-          icon={() => <FontAwesome name="heartbeat" size={24} color="white" />}
+          icon={() => <MaterialCommunityIcons name="dumbbell" size={24} color="white" />}
           onPress={nextPage}
         />
       </ImageBackground>
