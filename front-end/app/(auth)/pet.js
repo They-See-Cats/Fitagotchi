@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, ImageBackground, Alert, TouchableOpacity, Text, AppState } from 'react-native';
+import { View, Image, ImageBackground, Alert, Text, AppState } from 'react-native';
 import { Video } from 'expo-av';
 import { FAB } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
@@ -56,7 +56,7 @@ export default function PetScreen() {
     if (heartIndex > 0 && isScreenActive && appState === "active" && !isAlertOpen) {
       timer = setInterval(() => {
         setHeartIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
-      }, 99999999999999);
+      }, 1000);
     }
     return () => clearInterval(timer);
   }, [heartIndex, isScreenActive, appState, isAlertOpen]);
@@ -93,11 +93,11 @@ export default function PetScreen() {
           </View>
         </View>
 
-        {/* Hearts */}
+        {/* Hearts - non-clickable */}
         {level > 0 && (
-          <TouchableOpacity style={tw`absolute top-20`} onPress={() => setHeartIndex(heartIndex - 1)}>
-            <Image source={heartStates[heartIndex]} style={tw`w-36 h-12 mt-[400px]`} />
-          </TouchableOpacity>
+          <View style={tw`absolute top-20`}>
+            <Image source={heartStates[heartIndex]} style={tw`w-36 h-12 mt-[350px]`} />
+          </View>
         )}
 
         {/* Cat Image */}
